@@ -1,0 +1,22 @@
+{
+  "name": "typist-bot",
+  "version": "1.0.0",
+  "description": "A bot that types on keyhero.com as fast as it possibly can.",
+  "main": "dist/bot.js",
+  "scripts": {
+    "prestart": "tsc",
+    "start": "node dist/bot.js",
+    "test": "test"
+  },
+  "author": "Brandon Yue",
+  "license": "MIT",
+  "dependencies": {
+    "chromedriver": "2.27.3",
+    "selenium-webdriver": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "7.0.5",
+    "@types/selenium-webdriver": "2.53.40",
+    "typescript": "^2.2.1"
+  }
+}
