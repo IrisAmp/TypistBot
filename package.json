@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A bot that types on keyhero.com as fast as it possibly can.",
   "main": "dist/bot.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IrisAmp/TypistBot"
+  },
   "scripts": {
     "prestart": "tsc",
     "start": "node dist/bot.js",
