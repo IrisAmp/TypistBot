@@ -13,44 +13,45 @@ const {
   targetWpm,
   errorChance,
   slowdownChance,
+  slowdownRange,
 } = config;
 
-async function delay(t: number) {
+async function delayMs(t: number) {
   return await new Promise((r) => setTimeout(r, t));
 }
 
-async function sendSingleKeyAndDelay(input: Webdriver.WebElement, wpmElement: null | Webdriver.WebElement, key: string | number, wait?: number) {
+async function sendSingleKeyAndDelay(input: Webdriver.WebElement, wpmElement: null | Webdriver.WebElement, key: string | number, delay: number) {
   await input.sendKeys(key);
-  if (wpmElement !== null && wait === undefined) {
-    wait = 100;
+  if (wpmElement !== null) {
+    delay = 100;
     const t0 = (new Date()).getTime();
     const wpm = parseFloat(await wpmElement.getText());
     if (wpm < targetWpm) {
-      wait -= (targetWpm - wpm) + ((new Date()).getTime() - t0);
+      delay -= (targetWpm - wpm) + ((new Date()).getTime() - t0);
     }
   }
   if (Math.random() < slowdownChance) {
-    wait += (Math.random() * 150);
+    delay += (Math.random() * slowdownRange);
   }
-  await delay(wait);
+  await delayMs(delay);
 }
 
-async function sendEntireQuote(input: Webdriver.WebElement, wpmElement: Webdriver.WebElement, quote: string, allowErrors = true) {
+async function sendEntireQuote(input: Webdriver.WebElement, wpmElement: Webdriver.WebElement, quote: string, baseDelay = 60, allowErrors = true) {
   const originalQuote = quote;
   while (quote.length) {
     let nextKey = quote.charAt(0);
     if (allowErrors && nextKey !== " " && quote.length > 5 && Math.random() < errorChance) {
       const errorPart = " " + quote.slice(0, Math.floor(1 + (Math.random() * 3)));
-      await sendEntireQuote(input, wpmElement, errorPart, false);
-      await delay(150);
+      await sendEntireQuote(input, wpmElement, errorPart, baseDelay, false);
+      await delayMs(150);
       for (let i = 0; i < errorPart.length + 1; i++) {
-        await sendSingleKeyAndDelay(input, wpmElement, Key.BACK_SPACE);
+        await sendSingleKeyAndDelay(input, wpmElement, Key.BACK_SPACE, baseDelay);
       }
       const inputValue = await input.getAttribute("value");
       quote = originalQuote.slice(inputValue.length);
       nextKey = quote.charAt(0);
     }
-    await sendSingleKeyAndDelay(input, wpmElement, nextKey);
+    await sendSingleKeyAndDelay(input, wpmElement, nextKey, baseDelay);
     quote = quote.slice(1);
   }
 }
@@ -69,11 +70,11 @@ async function doRuns(n: number) {
       driver.findElement(By.css('input.user-input-text')),
       driver.findElement(By.css('[data-reactid=".0.1.1.1.0"]'))
     ]);
-    await delay(1000 + (Math.random() * 2000));
+    await delayMs(1000 + (Math.random() * 2000));
     await sendEntireQuote(elements[0], elements[1], quote);
     const resultText = await driver.findElement(By.css('[data-reactid=".0.1.1.1.0"]')).getText();
     console.log(`Run completed (${resultText}WPM)`);
-    await delay(1000 + (Math.random() * 2000));
+    await delayMs(1000 + (Math.random() * 2000));
   }
 }
 
@@ -96,15 +97,14 @@ async function keyHero() {
   }
   await driver.get('https://www.keyhero.com/free-typing-test/');
   await driver.wait(until.titleContains('Check'));
-  await delay(15000);
+  await delayMs(15000);
   await doAllRuns();
-  await delay(15000);
+  await delayMs(15000);
   driver.close();
 }
 
 async function tenFastFingers() {
   await driver.get('https://10fastfingers.com/typing-test/english');
-  await delay(5000);
   const words = await driver.findElement(By.css('div#words'));
   const input = await driver.findElement(By.css('input#inputfield'));
 
@@ -113,16 +113,16 @@ async function tenFastFingers() {
   while (go) {
     try {
       const nextword = await words.findElement(By.css(`[wordnr="${wordnr}"]`)).getText();
-      await sendEntireQuote(input, null, nextword + " ", false);
+      await sendEntireQuote(input, null, nextword + " ", 0, false);
     } catch (ignored) {
       go = false;
     }
     wordnr++;
     go = await words.isDisplayed();
   }
-  await delay(15000);
+  await delayMs(15000);
   driver.close();
 }
 
-keyHero();
+// keyHero();
 tenFastFingers();

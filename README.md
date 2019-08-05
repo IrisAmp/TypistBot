@@ -19,4 +19,5 @@ Configure the bot in `bot.config.json`.
 - `numberOfRuns` - How many tests to do before closing
 - `targetWpm` - If the test website has a live WPM counter, the bot will try to stay below this WPM.
 - `slowdownChance` - The probability (between 0 and 1) that the bot will add a random slowdown to any keystroke.
+- `slowdownRange` - The maximum slowdown in ms. The actual slowdown will be a random number between 0 and `slowdownRange`.
 - `errorChance` - The probability (between 0 and 1) that the bot will deliberately make an error and correct it.

@@ -4,5 +4,6 @@
     "numberOfRuns": 3,
     "targetWpm": 285,
     "slowdownChance": 0.10,
+    "slowdownRange": 150,
     "errorChance": 0.005
 }
