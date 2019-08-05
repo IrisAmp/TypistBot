@@ -1,5 +1,8 @@
 {
     "username": "",
     "password": "",
-    "numberOfRuns": 1
+    "numberOfRuns": 3,
+    "targetWpm": 285,
+    "slowdownChance": 0.10,
+    "errorChance": 0.005
 }
